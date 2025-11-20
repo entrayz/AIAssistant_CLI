@@ -1,0 +1,245 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ICTVisualizer.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+        x:Class="ICTVisualizer.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AI Assistant"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        Width="800" Height="500"
+        MinWidth="640" MinHeight="400">
+
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#4f46e5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#6366f1"/>
+            <Setter Property="RenderTransform" Value="scale(1.02)"/>
+        </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.98)"/>
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#e5e7eb"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,4"/>
+        </Style>
+
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+
+        <!-- ScrollBar Styles -->
+        <Style Selector="ScrollBar">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Margin" Value="0,0,2,2"/>
+            <Setter Property="MinWidth" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="ScrollBar /template/ Thumb">
+            <Setter Property="Background" Value="#d1d5db"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+
+        <Style Selector="ScrollBar /template/ Thumb:pointerover">
+            <Setter Property="Background" Value="#9ca3af"/>
+        </Style>
+
+        <Style Selector="ScrollBar /template/ Thumb:pressed">
+            <Setter Property="Background" Value="#6b7280"/>
+        </Style>
+
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#ffffff"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 2 4 0 #1a000000"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Padding" Value="12"/>
+        </Style>
+    </Window.Styles>
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    <Panel>
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="#f8fafc"
+                    TintOpacity="1"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+
+        <Grid Margin="16,32,16,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel -->
+            <Grid Grid.Column="0" Margin="0,0,12,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- App Title -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                    <TextBlock Text="AI Assistant" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="Ваш умный помощник" FontSize="12" Foreground="#6b7280" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Commands List -->
+                <Border Grid.Row="1" Classes="card">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Доступные команды" 
+                                 FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <ListBox ItemsSource="{Binding AvailableCommands}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" 
+                                             TextWrapping="Wrap"
+                                             FontSize="13"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Padding" Value="8,6"/>
+                                    <Setter Property="CornerRadius" Value="4"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.Styles>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- Quick Actions -->
+                <Border Grid.Row="2" Classes="card">
+                    <StackPanel>
+                        <TextBlock Text="Быстрые действия" FontSize="14" 
+                                   FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <UniformGrid Columns="3" Rows="2">
+                            <Button Command="{Binding RunPresetCommand}" 
+                                    CommandParameter="открыть сайт google.com">
+                                <StackPanel>
+                                    <PathIcon Data="{StaticResource web_regular}" Height="16"/>
+                                    <TextBlock Text="Открыть сайт" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RunPresetCommand}"
+                                    CommandParameter="время">
+                                <StackPanel>
+                                    <PathIcon Data="{StaticResource clock_regular}" Height="20"/>
+                                    <TextBlock Text="Время" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RunPresetCommand}"
+                                    CommandParameter="=2+2">
+                                <StackPanel>
+                                    <PathIcon Data="{StaticResource calculator_regular}" Height="20"/>
+                                    <TextBlock Text="Калькулятор" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RunPresetCommand}"
+                                    CommandParameter="dir .">
+                                <StackPanel>
+                                    <PathIcon Data="{StaticResource folder_regular}" Height="20"/>
+                                    <TextBlock Text="Файлы" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RunPresetCommand}"
+                                    CommandParameter="очистить"
+                                    Background="#ef4444">
+                                <StackPanel>
+                                    <PathIcon Data="{StaticResource delete_regular}" Height="20"/>
+                                    <TextBlock Text="Очистить" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Right Panel -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- History Card -->
+                <Border Classes="card">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                            <PathIcon Data="{StaticResource history_regular}" 
+                                    Height="20" Margin="0,0,8,0"/>
+                            <TextBlock Text="История команд" FontSize="16" 
+                                     FontWeight="SemiBold"/>
+                        </DockPanel>
+                        <ListBox ItemsSource="{Binding History}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- Command Input -->
+                <Border Grid.Row="1" Classes="card">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0" Text="{Binding Command}" 
+                                Watermark="Введите команду или выражение (например: =2+2)"/>
+                        <Button Grid.Column="1" Margin="8,0,0,0" 
+                                Command="{Binding ExecuteCommandCommand}"
+                                IsDefault="True">
+                            <StackPanel Orientation="Horizontal">
+                                <PathIcon Data="{StaticResource send_regular}" 
+                                        Height="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="Выполнить"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Panel>
+</Window>
