@@ -42,7 +42,6 @@ public class AIConfig
             // ignore config read errors; defaults will be used
         }
 
-        // Allow environment variables to override
         var envKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
         if (!string.IsNullOrEmpty(envKey))
             ApiKey = envKey;

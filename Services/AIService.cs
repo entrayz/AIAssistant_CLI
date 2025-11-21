@@ -105,7 +105,6 @@ public class AIService
                 using var doc = JsonDocument.Parse(contentStr);
                 var root = doc.RootElement;
 
-                // Попытка извлечь ответ из стандартной структуры OpenAI-like: choices[0].message.content
                 if (root.TryGetProperty("choices", out var choices) && choices.ValueKind == JsonValueKind.Array && choices.GetArrayLength() > 0)
                 {
                     var firstChoice = choices[0];
@@ -120,7 +119,6 @@ public class AIService
                         }
                     }
                     
-                    // Попытка извлечь из choices[0].text
                     if (firstChoice.TryGetProperty("text", out var textElem))
                     {
                         var text = textElem.GetString();
@@ -132,7 +130,6 @@ public class AIService
                     }
                 }
 
-                // Если не нашли в стандартных местах, ищем первое попавшееся строковое значение
                 var fallback = ExtractFirstString(root);
                 if (!string.IsNullOrEmpty(fallback))
                 {
@@ -140,7 +137,6 @@ public class AIService
                     return fallback.Trim();
                 }
 
-                // Если ничего не найдено, возвращаем сырой ответ как есть
                 _cache.Set(key, contentStr);
                 return contentStr;
             }

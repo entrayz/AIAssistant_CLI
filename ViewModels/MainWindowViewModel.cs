@@ -56,7 +56,6 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private string command = "";
 
-    //Свойство для значения contextLen
     private int _contextLen;
     public int ContextLen
     {
@@ -75,7 +74,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var commandLower = Command.ToLower().Trim();
 
-        // Шаг 1: Проверяем, есть ли ожидание подтверждения удаления
         if (_pendingDeletionPath != null)
         {
             if (commandLower == "да" || commandLower == "yes")
@@ -103,10 +101,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 Output = "Удаление отменено.";
             }
 
-            _pendingDeletionPath = null; // Сбрасываем состояние подтверждения
+            _pendingDeletionPath = null; 
             History.Insert(0, $"[{DateTime.Now:T}] > {original} -> {Output}");
             Command = string.Empty;
-            return; // Завершаем выполнение
+            return; 
         }
 
 
@@ -151,7 +149,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     try
                     {
-                        // Basic expression evaluation using DataTable.Compute
                         var result = EvaluateExpression(expr);
                         Output = $"{expr} = {result}";
                     }
@@ -212,7 +209,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     try
                     {
-                        // Декодируем escape-последовательности (например, \n, \t) перед записью
                         var decodedContent = System.Text.RegularExpressions.Regex.Unescape(fileContent);
                         await System.IO.File.WriteAllTextAsync(filePath, decodedContent);
                         Output = $"Файл успешно создан: {filePath}";
@@ -255,7 +251,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     _pendingDeletionPath = path;
                     Output = $"Вы уверены, что хотите удалить '{path}'? Введите 'да' для подтверждения.";
-                    // Не очищаем Command и не пишем в историю, ждем подтверждения
                     return;
                 }
             }
@@ -273,9 +268,7 @@ public partial class MainWindowViewModel : ViewModelBase
                         var formattedEntries = entries.Select(e =>
                         {
                             var name = System.IO.Path.GetFileName(e);
-                            // Проверяем, является ли элемент директорией
                             bool isDirectory = System.IO.Directory.Exists(e);
-                            // Используем Unicode-символы для иконок
                             string icon = isDirectory ? "📁" : "📄";
                             return $"{icon} {name}";
                         });
@@ -341,7 +334,6 @@ public partial class MainWindowViewModel : ViewModelBase
                     {
                         var response = await _aiService.GetAIResponseAsync(question, GetContextForAI());
 
-                        // Добавляем вопрос и ответ в историю диалога для контекста
                         _aiConversationHistory.Add(("user", question));
                         _aiConversationHistory.Add(("assistant", response));
 
@@ -349,11 +341,9 @@ public partial class MainWindowViewModel : ViewModelBase
                         if (response.StartsWith("COMMAND:"))
                         {
                             var commandToRun = response.Substring("COMMAND:".Length).Trim();
-                            // ИИ предложил команду. Показываем ее в выводе и подставляем в поле ввода.
                             Output = $"ИИ предлагает команду. Нажмите 'Выполнить', чтобы запустить:\n\n{commandToRun}";
                             Command = commandToRun;
 
-                            // Записываем в историю именно то, что спросил пользователь и что предложил ИИ
                             try
                             {
                                 var entry = $"[{DateTime.Now:T}] > {original} -> {Output}";
@@ -361,7 +351,7 @@ public partial class MainWindowViewModel : ViewModelBase
                             }
                             catch { }
 
-                            return; // Прерываем выполнение, чтобы не очищать поле Command
+                            return; 
                         }
                         else
                         {
@@ -388,7 +378,6 @@ public partial class MainWindowViewModel : ViewModelBase
                         _aiConversationHistory.Clear();
                         break;
                     case "забыть":
-                        //очищаем контекст ИИ, не трогая историю
                         _aiConversationHistory.Clear();
                         Output = "Диалог с ИИ сброшен.";
                         break;
@@ -410,7 +399,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch { }
 
-        Command = string.Empty; // clear input
+        Command = string.Empty;
     }
 
     [RelayCommand]
@@ -433,17 +422,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 throw new ArgumentException("Выражение содержит недопустимые символы");
         }
 
-        // Replace comma with dot for decimal
         expr = expr.Replace(',', '.');
 
         var table = new System.Data.DataTable();
-        // compute
         var result = table.Compute(expr, string.Empty);
         return result;
     }
     private List<(string role, string content)> GetContextForAI()
     {
-        //Обрезаем историю разговоров до MaxConversationLength
         return _aiConversationHistory.TakeLast(_maxConversationLength).ToList();
     }
 }
